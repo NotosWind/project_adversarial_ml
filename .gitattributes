@@ -1,0 +1,12 @@
+# Нормализация переводов строк (важно при работе на разных ОС)
+* text=auto eol=lf
+
+# Бинарные файлы — без преобразований
+*.png  binary
+*.jpg  binary
+*.pdf  binary
+*.docx binary
+*.pptx binary
+*.pt   binary
+*.onnx binary
+*.gz   binary
