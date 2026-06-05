@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Карточка проекта: итеративный состязательный атакователь ML-модели с защитой через состязательное обучение.">
+    <title>Итеративный состязательный атакователь ML-модели</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar" aria-label="Навигация">
+      <a class="brand" href="#top" aria-label="К началу страницы">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Adversarial ML</span>
+      </a>
+      <nav class="nav">
+        <a href="#idea">Идея</a>
+        <a href="#results">Результаты</a>
+        <a href="#pipeline">Пайплайн</a>
+        <a href="#artifacts">Артефакты</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-media" aria-hidden="true"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <p class="eyebrow">PyTorch · CUDA · ART · MNIST · ONNX</p>
+          <h1 id="hero-title">Итеративный состязательный атакователь ML-модели</h1>
+          <p class="hero-copy">
+            Проект демонстрирует цикл «атака ↔ защита»: PGD и FGSM атакуют CNN на MNIST,
+            а состязательное обучение постепенно возвращает устойчивость модели.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#results">Смотреть результаты</a>
+            <a class="button ghost" href="assets/docs/report.pdf">Пояснительная записка</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="metric-strip" aria-label="Ключевые результаты">
+        <article class="metric-card">
+          <span class="metric-label">Чистый тест</span>
+          <strong data-count="98.86">0</strong>
+          <span class="metric-note">точность итоговой модели, %</span>
+        </article>
+        <article class="metric-card danger">
+          <span class="metric-label">PGD до защиты</span>
+          <strong data-count="5.85">0</strong>
+          <span class="metric-note">точность базовой модели, %</span>
+        </article>
+        <article class="metric-card good">
+          <span class="metric-label">PGD после защиты</span>
+          <strong data-count="92.60">0</strong>
+          <span class="metric-note">точность после 10 итераций, %</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">Успех атаки</span>
+          <strong data-count="7.95">0</strong>
+          <span class="metric-note">после финальной защиты, %</span>
+        </article>
+      </section>
+
+      <section class="section two-column" id="idea">
+        <div class="section-copy">
+          <p class="eyebrow">Задача проекта</p>
+          <h2>Показать, как модель ломается под атакой и становится устойчивее после защиты</h2>
+          <p>
+            На вход подаётся обученная CNN-модель в формате PyTorch <code>.pt</code>.
+            Атакователь оборачивает её в ART <code>PyTorchClassifier</code>, строит
+            состязательные примеры и измеряет падение качества. Затем защита выполняет
+            состязательное обучение на PGD-примерах, которые генерируются заново для
+            каждого батча против текущих весов.
+          </p>
+        </div>
+        <div class="fact-grid" aria-label="Факты проекта">
+          <article>
+            <span>Данные</span>
+            <strong>MNIST</strong>
+            <p>70 000 изображений рукописных цифр 28×28.</p>
+          </article>
+          <article>
+            <span>Модель</span>
+            <strong>CNN</strong>
+            <p>Две свёртки, MaxPool, Dropout, два полносвязных слоя.</p>
+          </article>
+          <article>
+            <span>Атаки</span>
+            <strong>FGSM / PGD</strong>
+            <p>Основная оценка устойчивости ведётся PGD при ε = 0.2.</p>
+          </article>
+          <article>
+            <span>Форматы</span>
+            <strong>.pt / ONNX</strong>
+            <p>Файл модели для атакующего и экспорт финальной модели.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section result-band" id="results">
+        <div class="section-heading">
+          <p class="eyebrow">Результаты эксперимента</p>
+          <h2>10 итераций заметно снижают эффективность атаки</h2>
+          <p>
+            Базовая модель сохраняет высокую точность на чистых данных, но PGD почти
+            полностью разрушает классификацию. После состязательного обучения робастность
+            под той же атакой вырастает до 92.6 %.
+          </p>
+        </div>
+        <div class="chart-grid">
+          <figure>
+            <img src="assets/images/accuracy_curves.png" alt="Кривые точности модели по итерациям">
+            <figcaption>Точность на чистом тесте, под FGSM и под PGD до/после защиты.</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/images/attack_success.png" alt="График успеха PGD-атаки по итерациям">
+            <figcaption>Доля успешных атак падает с 94.4 % на первой итерации до 7.95 %.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section table-section" aria-labelledby="metrics-title">
+        <div class="section-heading compact">
+          <p class="eyebrow">Метрики</p>
+          <h2 id="metrics-title">Финальный прогон</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Итерация</th>
+                <th>Чистый тест</th>
+                <th>FGSM до</th>
+                <th>PGD до</th>
+                <th>PGD после</th>
+                <th>Успех PGD</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>98.76 %</td><td>52.40 %</td><td>5.60 %</td><td>80.15 %</td><td>94.40 %</td></tr>
+              <tr><td>5</td><td>98.68 %</td><td>93.75 %</td><td>89.85 %</td><td>90.20 %</td><td>10.15 %</td></tr>
+              <tr><td>10</td><td>98.86 %</td><td>95.40 %</td><td>92.05 %</td><td>92.60 %</td><td>7.95 %</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section two-column visual-section">
+        <figure class="wide-figure">
+          <img src="assets/images/adv_examples_grid.png" alt="Оригинальные и состязательные изображения MNIST с предсказаниями моделей">
+          <figcaption>Одни и те же PGD-искажения обманывают базовую модель, но финальная модель чаще сохраняет верный класс.</figcaption>
+        </figure>
+        <div class="section-copy">
+          <p class="eyebrow">Наглядность</p>
+          <h2>Возмущение почти незаметно, но поведение модели меняется радикально</h2>
+          <p>
+            Состязательные примеры ограничены по L∞-норме, поэтому визуально похожи
+            на исходные цифры. Разница проявляется в предсказаниях: обычная модель
+            уверенно ошибается, а модель после adversarial training удерживает класс.
+          </p>
+        </div>
+      </section>
+
+      <section class="section epsilon-section">
+        <div class="section-copy">
+          <p class="eyebrow">Эскалация ε</p>
+          <h2>Защита работает в обученном диапазоне и деградирует при усилении атаки</h2>
+          <p>
+            Дополнительный эксперимент сравнивает базовую и устойчивую модели при
+            ε от 0.05 до 0.30. При ε = 0.20 финальная модель даёт 92.6 % против
+            5.85 % у базовой, но при ε = 0.30 устойчивость ожидаемо падает.
+          </p>
+        </div>
+        <figure>
+          <img src="assets/images/epsilon_sweep.png" alt="Сравнение устойчивости базовой и финальной модели при разных значениях эпсилон">
+          <figcaption>Устойчивая модель превосходит базовую при всех проверенных значениях ε.</figcaption>
+        </figure>
+      </section>
+
+      <section class="section pipeline" id="pipeline" aria-labelledby="pipeline-title">
+        <div class="section-heading">
+          <p class="eyebrow">Пайплайн</p>
+          <h2 id="pipeline-title">Модульная архитектура проекта</h2>
+        </div>
+        <ol class="steps">
+          <li>
+            <span>01</span>
+            <strong>Базовое обучение</strong>
+            <p>CNN обучается на MNIST и сохраняется как <code>models/baseline.pt</code>.</p>
+          </li>
+          <li>
+            <span>02</span>
+            <strong>Атака</strong>
+            <p>ART генерирует FGSM/PGD-примеры и считает точность под атакой.</p>
+          </li>
+          <li>
+            <span>03</span>
+            <strong>Защита</strong>
+            <p>PGD-примеры создаются per-batch, модель делает шаг оптимизации.</p>
+          </li>
+          <li>
+            <span>04</span>
+            <strong>Экспорт</strong>
+            <p>Финальная устойчивая модель сохраняется в <code>.pt</code> и ONNX.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="section artifacts" id="artifacts">
+        <div class="section-heading">
+          <p class="eyebrow">Материалы</p>
+          <h2>Артефакты проекта</h2>
+        </div>
+        <div class="artifact-grid">
+          <a href="assets/docs/report.pdf">
+            <span>PDF</span>
+            <strong>Пояснительная записка</strong>
+            <p>Основной текст проекта без использования титульного листа на сайте.</p>
+          </a>
+          <a href="assets/docs/presentation.pdf">
+            <span>PDF</span>
+            <strong>Презентация</strong>
+            <p>Слайды для защиты с кратким описанием метода и результатов.</p>
+          </a>
+          <a href="https://github.com/NotosWind/project_adversarial_ml">
+            <span>GitHub</span>
+            <strong>Репозиторий</strong>
+            <p>Исходный код, скрипты запуска, метрики и сгенерированные графики.</p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Проект по adversarial machine learning · 2026</p>
+      <a href="#top">Наверх</a>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
