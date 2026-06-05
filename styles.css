@@ -291,7 +291,8 @@ p {
 }
 
 .fact-grid article,
-.artifact-grid a,
+.artifact-grid > a,
+.artifact-grid > article,
 .steps li {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -326,6 +327,25 @@ p {
   margin-top: 0.55rem;
   color: var(--muted);
   font-size: 0.95rem;
+}
+
+.artifact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.artifact-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid rgba(8, 127, 140, 0.26);
+  border-radius: 6px;
+  color: var(--teal);
+  font-size: 0.82rem;
+  font-weight: 900;
 }
 
 .result-band {
@@ -449,13 +469,15 @@ tr:last-child td {
   margin-top: 2rem;
 }
 
-.artifact-grid a {
+.artifact-grid > a,
+.artifact-grid > article {
   min-height: 168px;
   padding: 1.1rem;
   transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
 }
 
-.artifact-grid a:hover {
+.artifact-grid > a:hover,
+.artifact-grid > article:hover {
   transform: translateY(-3px);
   border-color: var(--teal);
   background: #fff;
